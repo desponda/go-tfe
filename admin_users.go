@@ -35,6 +35,7 @@ type AdminUser struct {
 
 	// Relations
 	// AuthenticationTokens *AuthenticationTokens `jsonapi:"relation,authentication-tokens"`
+	Organization *Organization `jsonapi:"relation,organization"`
 }
 
 // AdminTwoFactor represents the organization permissions.
@@ -52,6 +53,8 @@ type AdminUsersList struct {
 // AdminUsersListOptions represents the options for listing users.
 type AdminUsersListOptions struct {
 	ListOptions
+
+	Include string `url:"include"`
 }
 
 // List all the users of the terraform enterprise installation.
