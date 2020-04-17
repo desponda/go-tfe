@@ -18,6 +18,9 @@ var _ AdminRuns = (*adminRuns)(nil)
 type AdminRuns interface {
 	// List all the runs of the given installation.
 	List(ctx context.Context, options AdminRunsListOptions) (*AdminRunsList, error)
+
+	// Force-cancel a run by its ID.
+	ForceCancel(ctx context.Context, runID string, options RunForceCancelOptions) error
 }
 
 // runs implements Users.
