@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 // Compile-time proof of interface implementation.
@@ -33,10 +34,42 @@ type AdminRunsList struct {
 // AdminRunsListOptions represents the options for listing runs.
 type AdminRunsListOptions struct {
 	ListOptions
+	RunStatus *string `url:"filter[status]"`
+	Query     *string `url:"q"`
+}
+
+func (o AdminRunsListOptions) valid() error {
+	if *o.RunStatus != "" {
+		validRunStatus := []string{"pending", "plan_queued", "planning", "planned", "confirmed", "apply_queued", "applying", "applied", "discarded", "errored", "canceled", "cost_estimating", "cost_estimated", "policy_checking", "policy_override", "policy_soft_failed", "policy_checked", "planned_and_finished"}
+		runStatus := strings.Split(*o.RunStatus, ",")
+
+		// iterate over our statuses
+		for _, status := range runStatus {
+
+			// start with invalid
+			valid := false
+			for _, s := range validRunStatus {
+				if status == s {
+					// found a match, set to true and continue to the next status
+					valid = true
+					break
+				}
+			}
+
+			if valid == false {
+				return fmt.Errorf("invalid value %s for run status", status)
+			}
+		}
+	}
+	return nil
 }
 
 // List all the runs of the terraform enterprise installation.
 func (s *adminRuns) List(ctx context.Context, options AdminRunsListOptions) (*AdminRunsList, error) {
+	if err := options.valid(); err != nil {
+		return nil, err
+	}
+
 	u := fmt.Sprintf("admin/runs")
 	req, err := s.client.newRequest("GET", u, &options)
 	if err != nil {
