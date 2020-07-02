@@ -658,6 +658,9 @@ func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
 		} `json:"meta"`
 	}
 
+	buf, _ := ioutil.ReadAll(body)
+	fmt.Println(buf)
+
 	// JSON decode the raw response.
 	if err := json.NewDecoder(body).Decode(&raw); err != nil {
 		fmt.Println(fmt.Sprintf("failed to decode status-counts %s %s", err, body))
