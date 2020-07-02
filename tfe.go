@@ -533,6 +533,7 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 	// Try to get the Items and Pagination struct fields.
 	items := dst.FieldByName("Items")
 	pagination := dst.FieldByName("Pagination")
+	statusCounts := dst.FieldByName("StatusCounts")
 
 	// Unmarshal a single value if v does not contain the
 	// Items and Pagination struct fields.
@@ -568,23 +569,15 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 	items.Set(result)
 
 	// As we are getting a list of values, we need to decode
-	// the pagination details out of the response body.
-	p, err := parsePagination(body)
+	// the meta details out of the response body.
+	m, err := parseMeta(body)
 	if err != nil {
 		return err
 	}
 
 	// Pointer-swap the decoded pagination details.
-	pagination.Set(reflect.ValueOf(p))
-
-	statusCounts := dst.FieldByName("StatusCounts")
-	s, err := parseStatusCounts(body)
-	if err != nil {
-		return err
-	}
-
-	// Pointer-swap the decoded status-counts details.
-	statusCounts.Set(reflect.ValueOf(s))
+	pagination.Set(reflect.ValueOf(m.Pagination))
+	statusCounts.Set(reflect.ValueOf(m.StatusCounts))
 
 	return nil
 }
@@ -606,21 +599,6 @@ type Pagination struct {
 	NextPage     int `json:"next-page"`
 	TotalPages   int `json:"total-pages"`
 	TotalCount   int `json:"total-count"`
-}
-
-func parsePagination(body io.Reader) (*Pagination, error) {
-	var raw struct {
-		Meta struct {
-			Pagination Pagination `json:"pagination"`
-		} `json:"meta"`
-	}
-
-	// JSON decode the raw response.
-	if err := json.NewDecoder(body).Decode(&raw); err != nil {
-		return &Pagination{}, err
-	}
-
-	return &raw.Meta.Pagination, nil
 }
 
 // StatusCounts is used to return statistics for your list requests.
@@ -652,10 +630,17 @@ type StatusCounts struct {
 	None int `json:"none,omitempty"`
 }
 
-func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
+// Meta is used to return the meta struct
+type Meta struct {
+	Pagination   Pagination
+	StatusCounts StatusCounts
+}
+
+func parseMeta(body io.Reader) (*Pagination, error) {
 	var raw struct {
 		Meta struct {
-			StatusCounts StatusCounts `json:"status-counts"`
+			Pagination   Pagination   `json:"pagination"`
+			StatusCounts StatusCounts `json:"status-counts,omitempty"`
 		} `json:"meta"`
 	}
 
@@ -664,11 +649,11 @@ func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
 
 	// JSON decode the raw response.
 	if err := json.NewDecoder(body).Decode(&raw); err != nil {
-		fmt.Println(fmt.Sprintf("failed to decode status-counts %s %s", err, body))
-		return &StatusCounts{}, nil
+		fmt.Println(fmt.Sprintf("failed to decode err %s body %s", err, body))
+		return &Meta{}, err
 	}
 
-	return &raw.Meta.StatusCounts, nil
+	return &raw.Meta, nil
 }
 
 // checkResponseCode can be used to check the status code of an HTTP request.
