@@ -12,15 +12,15 @@ jobs:
         environment:
           TEST_RESULTS_DIR: *test_results_dir
 
-    working_directory: /go/src/github.com/hashicorp/go-tfe
+    working_directory: /go/src/github.com/DeviaVir/go-tfe
 
     steps:
       - checkout
-      
+
       - run:
           name: Make test results directory
           command: mkdir -p $TEST_RESULTS_DIR
-      
+
       - run:
           name: Run tests
           command: |
