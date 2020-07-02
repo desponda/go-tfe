@@ -647,13 +647,18 @@ func parseMeta(body io.Reader) (*Meta, error) {
 	buf, _ := ioutil.ReadAll(body)
 	fmt.Println(buf)
 
+	m := &Meta{}
+
 	// JSON decode the raw response.
 	if err := json.NewDecoder(body).Decode(&raw); err != nil {
 		fmt.Println(fmt.Sprintf("failed to decode err %s body %s", err, body))
-		return &Meta{}, err
+		return m, err
 	}
 
-	return &raw.Meta, nil
+	m.Pagination = raw.Meta.Pagination
+	m.StatusCounts = raw.Meta.StatusCounts
+
+	return m, nil
 }
 
 // checkResponseCode can be used to check the status code of an HTTP request.
