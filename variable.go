@@ -54,13 +54,13 @@ type VariableList struct {
 
 // Variable represents a Terraform Enterprise variable.
 type Variable struct {
-	ID        string       `jsonapi:"primary,vars"`
-	Key       string       `jsonapi:"attr,key"`
-	Value     string       `jsonapi:"attr,value"`
-	Description string     `jsonapi:"attr,description"`
-	Category  CategoryType `jsonapi:"attr,category"`
-	HCL       bool         `jsonapi:"attr,hcl"`
-	Sensitive bool         `jsonapi:"attr,sensitive"`
+	ID          string       `jsonapi:"primary,vars"`
+	Key         string       `jsonapi:"attr,key"`
+	Value       string       `jsonapi:"attr,value"`
+	Description string       `jsonapi:"attr,description"`
+	Category    CategoryType `jsonapi:"attr,category"`
+	HCL         bool         `jsonapi:"attr,hcl"`
+	Sensitive   bool         `jsonapi:"attr,sensitive"`
 
 	// Relations
 	Workspace *Workspace `jsonapi:"relation,configurable"`
