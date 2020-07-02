@@ -636,7 +636,7 @@ type Meta struct {
 	StatusCounts StatusCounts
 }
 
-func parseMeta(body io.Reader) (*Pagination, error) {
+func parseMeta(body io.Reader) (*Meta, error) {
 	var raw struct {
 		Meta struct {
 			Pagination   Pagination   `json:"pagination"`
