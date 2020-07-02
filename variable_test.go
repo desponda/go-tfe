@@ -64,9 +64,9 @@ func TestVariablesCreate(t *testing.T) {
 
 	t.Run("with valid options", func(t *testing.T) {
 		options := VariableCreateOptions{
-			Key:      String(randomString(t)),
-			Value:    String(randomString(t)),
-			Category: Category(CategoryTerraform),
+			Key:         String(randomString(t)),
+			Value:       String(randomString(t)),
+			Category:    Category(CategoryTerraform),
 			Description: String(randomString(t)),
 		}
 
