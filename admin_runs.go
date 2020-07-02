@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
 )
 
 // Compile-time proof of interface implementation.
@@ -29,42 +28,24 @@ type adminRuns struct {
 	client *Client
 }
 
-type adminRun struct {
-	ID                     string               `jsonapi:"primary,runs"`
-	Actions                *RunActions          `jsonapi:"attr,actions"`
-	CreatedAt              time.Time            `jsonapi:"attr,created-at,iso8601"`
-	ForceCancelAvailableAt time.Time            `jsonapi:"attr,force-cancel-available-at,iso8601"`
-	HasChanges             bool                 `jsonapi:"attr,has-changes"`
-	IsDestroy              bool                 `jsonapi:"attr,is-destroy"`
-	Message                string               `jsonapi:"attr,message"`
-	Permissions            *RunPermissions      `jsonapi:"attr,permissions"`
-	PositionInQueue        int                  `jsonapi:"attr,position-in-queue"`
-	Source                 RunSource            `jsonapi:"attr,source"`
-	Status                 RunStatus            `jsonapi:"attr,status"`
-	StatusTimestamps       *RunStatusTimestamps `jsonapi:"attr,status-timestamps"`
-
-	// Relations
-	Workspace    *Workspace    `jsonapi:"relation,workspace"`
-	Organization *Organization `jsonapi:"relation,workspace.organization"`
-}
-
 // AdminRunsList represents a list of runs.
 type AdminRunsList struct {
 	*Pagination
+	*StatusCounts
 	Items []*Run
 }
 
 // AdminRunsListOptions represents the options for listing runs.
 type AdminRunsListOptions struct {
 	ListOptions
-	RunStatus *string `url:"filter[status]"`
+	RunStatus *string `url:"filter[status],omitempty"` // sending an empty param returns zero results
 	Query     *string `url:"q"`
 	Include   string  `url:"include"`
 }
 
 func (o AdminRunsListOptions) valid() error {
-	if *o.RunStatus != "" {
-		validRunStatus := []string{"pending", "plan_queued", "planning", "planned", "confirmed", "apply_queued", "applying", "applied", "discarded", "errored", "canceled", "cost_estimating", "cost_estimated", "policy_checking", "policy_override", "policy_soft_failed", "policy_checked", "planned_and_finished"}
+	if o.RunStatus != nil && *o.RunStatus != "" {
+		validRunStatus := []string{"pending", "plan_queued", "planning", "planned", "confirmed", "apply_queued", "applying", "applied", "discarded", "errored", "canceled", "cost_estimating", "cost_estimated", "policy_checking", "policy_override", "policy_soft_failed", "policy_checked", "planned_and_finished", "force_canceled"}
 		runStatus := strings.Split(*o.RunStatus, ",")
 
 		// iterate over our statuses

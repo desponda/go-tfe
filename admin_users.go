@@ -47,6 +47,7 @@ type AdminTwoFactor struct {
 // AdminUsersList represents a list of users.
 type AdminUsersList struct {
 	*Pagination
+	*StatusCounts
 	Items []*AdminUser
 }
 

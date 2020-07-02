@@ -576,6 +576,15 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 	// Pointer-swap the decoded pagination details.
 	pagination.Set(reflect.ValueOf(p))
 
+	statusCounts := dst.FieldByName("StatusCounts")
+	s, err := parseStatusCounts(body)
+	if err != nil {
+		return err
+	}
+
+	// Pointer-swap the decoded status-counts details.
+	statusCounts.Set(reflect.ValueOf(s))
+
 	return nil
 }
 
@@ -611,6 +620,50 @@ func parsePagination(body io.Reader) (*Pagination, error) {
 	}
 
 	return &raw.Meta.Pagination, nil
+}
+
+// StatusCounts is used to return statistics for your list requests.
+type StatusCounts struct {
+	Total int `json:"total,omitempty"`
+
+	// organization
+	ActiveTrial  int `json:"active-trial,omitempty"`
+	ExpiredTrial int `json:"expired-trial,omitempty"`
+	Pro          int `json:"pro,omitempty"`
+	Premium      int `json:"premium,omitempty"`
+	Disabled     int `json:"disabled,omitempty"`
+
+	// runs + workspaces
+	Pending        int `json:"pending,omitempty"`
+	Planning       int `json:"planning,omitempty"`
+	Planned        int `json:"planned,omitempty"`
+	Confirmed      int `json:"confirmed,omitempty"`
+	Applying       int `json:"applying,omitempty"`
+	Applied        int `json:"applied,omitempty"`
+	Discarded      int `json:"discarded,omitempty"`
+	Errored        int `json:"errored,omitempty"`
+	Canceled       int `json:"canceled,omitempty"`
+	PolicyChecking int `json:"policy-checking,omitempty"`
+	PolicyOverride int `json:"policy-override,omitempty"`
+	PolicyChecked  int `json:"policy-checked,omitempty"`
+
+	// workspaces
+	None int `json:"none,omitempty"`
+}
+
+func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
+	var raw struct {
+		Meta struct {
+			StatusCounts StatusCounts `json:"status-counts"`
+		} `json:"meta"`
+	}
+
+	// JSON decode the raw response.
+	if err := json.NewDecoder(body).Decode(&raw); err != nil {
+		return &StatusCounts{}, err
+	}
+
+	return &raw.Meta.StatusCounts, nil
 }
 
 // checkResponseCode can be used to check the status code of an HTTP request.
