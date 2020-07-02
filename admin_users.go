@@ -35,11 +35,7 @@ type AdminUser struct {
 
 	// Relations
 	// AuthenticationTokens *AuthenticationTokens `jsonapi:"relation,authentication-tokens"`
-<<<<<<< HEAD
-	Organization *Organization `jsonapi:"relation,organization"`
-=======
 	Organizations []*Organization `jsonapi:"relation,organizations"`
->>>>>>> 0253612... Feature: Admin/Users list
 }
 
 // AdminTwoFactor represents the organization permissions.
