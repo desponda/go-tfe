@@ -659,9 +659,9 @@ func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
 	}
 
 	// JSON decode the raw response.
-	fmt.Sprintf("%+v", body)
 	if err := json.NewDecoder(body).Decode(&raw); err != nil {
-		return &StatusCounts{}, err
+		fmt.Println(fmt.Sprintf("failed to decode status-counts %s %s", err, body))
+		return &StatusCounts{}, nil
 	}
 
 	return &raw.Meta.StatusCounts, nil
