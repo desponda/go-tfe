@@ -579,6 +579,7 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 	statusCounts := dst.FieldByName("StatusCounts")
 	s, err := parseStatusCounts(body)
 	if err != nil {
+		fmt.Println("failed to parse status counts")
 		return err
 	}
 
@@ -660,6 +661,7 @@ func parseStatusCounts(body io.Reader) (*StatusCounts, error) {
 
 	// JSON decode the raw response.
 	if err := json.NewDecoder(body).Decode(&raw); err != nil {
+		fmt.Println("failed status-counts")
 		return &StatusCounts{}, err
 	}
 
