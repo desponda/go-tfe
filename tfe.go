@@ -575,8 +575,8 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 	}
 
 	// Pointer-swap the decoded pagination details.
-	pagination.Set(reflect.ValueOf(m.Pagination))
-	statusCounts.Set(reflect.ValueOf(m.StatusCounts))
+	pagination.Set(reflect.ValueOf(&m.Pagination))
+	statusCounts.Set(reflect.ValueOf(&m.StatusCounts))
 
 	return nil
 }
