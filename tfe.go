@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -643,9 +642,6 @@ func parseMeta(body io.Reader) (*Meta, error) {
 			StatusCounts StatusCounts `json:"status-counts,omitempty"`
 		} `json:"meta"`
 	}
-
-	buf, _ := ioutil.ReadAll(body)
-	fmt.Println(buf)
 
 	m := &Meta{}
 
