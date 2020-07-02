@@ -632,8 +632,8 @@ type StatusCounts struct {
 
 // Meta is used to return the meta struct
 type Meta struct {
-	Pagination   Pagination
-	StatusCounts StatusCounts
+	Pagination   Pagination   `json:"pagination"`
+	StatusCounts StatusCounts `json:"status-counts,omitempty"`
 }
 
 func parseMeta(body io.Reader) (*Meta, error) {
