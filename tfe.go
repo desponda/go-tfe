@@ -637,7 +637,11 @@ func (c *Client) do(ctx context.Context, req *retryablehttp.Request, v interface
 
 	// Pointer-swap the decoded pagination details.
 	pagination.Set(reflect.ValueOf(&m.Pagination))
-	statusCounts.Set(reflect.ValueOf(&m.StatusCounts))
+
+	// Only include statusCounts if we have them
+	if statusCounts.CanAddr() {
+		statusCounts.Set(reflect.ValueOf(&m.StatusCounts))
+	}
 
 	return nil
 }
